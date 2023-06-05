@@ -15,7 +15,7 @@ from setuptools import find_packages
 global_compile_args = []
 
 # Extra compiler arguments passed to C++ extensions
-cpp_compile_args = []
+cpp_compile_args = ["-std=c++14"]
 
 # Extra linker arguments passed to C++ extensions
 cpp_link_args = []
@@ -30,7 +30,7 @@ is_win = sys.platform.startswith("win")
 # https://github.com/python-greenlet/greenlet/issues/4
 # https://github.com/python-greenlet/greenlet/issues/94
 # pylint:disable=too-many-boolean-expressions
-is_linux = sys.platform.startswith('linux') # could be linux or linux2
+is_linux = sys.platform.startswith('linux')  # could be linux or linux2
 plat_platform = platform.platform()
 plat_machine = platform.machine()
 plat_compiler = platform.python_compiler()
@@ -40,10 +40,10 @@ try:
 except AttributeError:
     unam_machine = ''
 if (
-       (sys.platform == "openbsd4" and unam_machine == "i386")
+    (sys.platform == "openbsd4" and unam_machine == "i386")
     or ("-with-redhat-3." in plat_platform and plat_machine == 'i686')
-    or (sys.platform == "sunos5" and unam_machine == "sun4v") # SysV-based Solaris
-    or ("SunOS" in plat_platform and plat_machine == "sun4v") # Old BSD-based SunOS
+    or (sys.platform == "sunos5" and unam_machine == "sun4v")  # SysV-based Solaris
+    or ("SunOS" in plat_platform and plat_machine == "sun4v")  # Old BSD-based SunOS
     or (is_linux and plat_machine == "ppc")
     # https://github.com/python-greenlet/greenlet/pull/300: When compiling for RISC-V the command
     # ``riscv64-linux-gnu-gcc -pthread -fno-strict-aliasing -Wdate-time \
@@ -69,7 +69,7 @@ elif is_win and "MSC" in plat_compiler:
     # Older versions of MSVC (Python 2.7) don't handle C++ exceptions
     # correctly by default. While newer versions do handle exceptions by default,
     # they don't do it fully correctly. So we need an argument on all versions.
-    #"/EH" == exception handling.
+    # "/EH" == exception handling.
     #    "s" == standard C++,
     #    "c" == extern C functions don't throw
     # OR
@@ -84,13 +84,13 @@ elif is_win and "MSC" in plat_compiler:
     handler = "/EHsr"
     cpp_compile_args.append(handler)
     # To disable most optimizations:
-    #cpp_compile_args.append('/Od')
+    # cpp_compile_args.append('/Od')
 
     # To enable assertions:
-    #cpp_compile_args.append('/UNDEBUG')
+    # cpp_compile_args.append('/UNDEBUG')
 
     # To enable more compile-time warnings (/Wall produces a mountain of output).
-    #cpp_compile_args.append('/W4')
+    # cpp_compile_args.append('/W4')
 
     # To link with the debug C runtime...except we can't because we need
     # the Python debug lib too, and they're not around by default
@@ -104,9 +104,11 @@ elif is_win and "MSC" in plat_compiler:
     # functions up. Revisit those.
     cpp_compile_args.append("/GT")
 
+
 def readfile(filename):
-    with open(filename, 'r') as f: # pylint:disable=unspecified-encoding
+    with open(filename, 'r') as f:  # pylint:disable=unspecified-encoding
         return f.read()
+
 
 GREENLET_SRC_DIR = 'src/greenlet/'
 GREENLET_HEADER_DIR = GREENLET_SRC_DIR
@@ -116,11 +118,14 @@ GREENLET_TEST_DIR = 'src/greenlet/tests/'
 # for switching.
 GREENLET_PLATFORM_DIR = GREENLET_SRC_DIR + 'platform/'
 
+
 def _find_platform_headers():
     return glob.glob(GREENLET_PLATFORM_DIR + "switch_*.h")
 
+
 def _find_impl_headers():
     return glob.glob(GREENLET_SRC_DIR + "*.hpp")
+
 
 if hasattr(sys, "pypy_version_info"):
     ext_modules = []
@@ -188,7 +193,7 @@ else:
 
 
 def get_greenlet_version():
-    with open('src/greenlet/__init__.py') as f: # pylint:disable=unspecified-encoding
+    with open('src/greenlet/__init__.py') as f:  # pylint:disable=unspecified-encoding
         looking_for = '__version__ = \''
         for line in f:
             if line.startswith(looking_for):
@@ -251,7 +256,7 @@ setup(
         'test': [
             'objgraph',
             # Sigh, all releases of this were yanked from PyPI.
-            #'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"',
+            # 'faulthandler; python_version == "2.7" and platform_python_implementation == "CPython"',
             'psutil',
         ],
     },
